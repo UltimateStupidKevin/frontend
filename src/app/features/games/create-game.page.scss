@@ -1,0 +1,22 @@
+.wrap { max-width: 680px; margin: 0 auto; }
+.title { font-size: 22px; font-weight: 700; margin: 0 0 16px; }
+
+.section { margin-bottom: 18px; }
+.label { font-weight: 600; margin-bottom: 8px; }
+
+.presets { display: flex; gap: 8px; flex-wrap: wrap; }
+.presets button {
+  border: 1px solid #cbd5e1; background: #fff; padding: 6px 10px; border-radius: 8px;
+  cursor: pointer;
+}
+.presets button.active { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+
+.custom { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-top: 8px; }
+.custom label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.custom input { width: 120px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+.tc-preview { font-size: 14px; color: #334155; }
+
+.sides { display: flex; gap: 16px; }
+.actions { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+.primary { background: #2563eb; color: #fff; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.err { color: #b91c1c; }

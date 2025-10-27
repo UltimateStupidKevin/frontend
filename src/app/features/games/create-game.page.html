@@ -1,0 +1,41 @@
+<div class="wrap">
+  <h2 class="title">Partie erstellen</h2>
+
+  <div class="section">
+    <div class="label">Zeitkontrolle</div>
+
+    <div class="presets">
+      <button
+        *ngFor="let p of presets; let i = index"
+        (click)="onSelectPreset(i)"
+        [class.active]="selectedPresetIdx===i"
+      >{{ p.label }}</button>
+    </div>
+
+    <div class="custom">
+      <label>
+        Minuten
+        <input type="number" [(ngModel)]="minutes" (input)="onCustomChange()" min="0" step="1" />
+      </label>
+      <label>
+        Inkrement (Sek.)
+        <input type="number" [(ngModel)]="increment" (input)="onCustomChange()" min="0" step="1" />
+      </label>
+      <div class="tc-preview">Wird gesendet: <b>{{ timeControl }}</b></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">Seite</div>
+    <div class="sides">
+      <label><input type="radio" name="side" value="random" [(ngModel)]="side" /> Zufällig</label>
+      <label><input type="radio" name="side" value="white"  [(ngModel)]="side" /> Weiß</label>
+      <label><input type="radio" name="side" value="black"  [(ngModel)]="side" /> Schwarz</label>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" (click)="create()" [disabled]="busy">Erstellen</button>
+    <span class="err" *ngIf="error">{{ error }}</span>
+  </div>
+</div>

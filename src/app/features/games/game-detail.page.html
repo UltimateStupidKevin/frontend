@@ -1,0 +1,98 @@
+<div *ngIf="game() as g">
+  <h2 class="text-xl font-bold mb-3">Game #{{ g.id }}</h2>
+
+  <!-- Namen & Status -->
+  <div class="flex justify-between mb-3">
+    <div>
+      <p><b>White:</b> {{ g.whiteUsername || g.whiteId || '—' }}</p>
+      <p><b>Black:</b> {{ g.blackUsername || g.blackId || '—' }}</p>
+    </div>
+    <div class="text-right">
+      <p><b>Status:</b> {{ g.status }}</p>
+      <p *ngIf="g.nextToMove"><b>Nächster Zug:</b> {{ g.nextToMove }}</p>
+    </div>
+  </div>
+
+  <!-- OPPONENT CLOCK (immer oben) -->
+  <div class="clock-row">
+    <div class="clock"
+         [class.active]="g.status==='ONGOING' && g.nextToMove === (meColor()==='w' ? 'BLACK' : 'WHITE')">
+      <div class="label">
+        {{ meColor()==='w' ? (g.blackUsername || g.blackId || '—') : (g.whiteUsername || g.whiteId || '—') }}
+      </div>
+      <div class="time">
+        {{ meColor()==='w'
+            ? formatMs(nowMsFor('BLACK'))
+            : formatMs(nowMsFor('WHITE')) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- BOARD -->
+  <div class="board-wrap">
+    <div class="board" [class.flipped]="flip()">
+      <div class="rank" *ngFor="let r of ranks(); let ri = index">
+        <div
+          class="cell"
+          *ngFor="let c of board()[ri]"
+          [class.light]="c.light"
+          [class.dark]="!c.light"
+          [class.sel]="c.selected"
+          [class.hint]="c.hint"
+          (click)="onCellClick(c.sq)"
+        >
+          <span
+            class="glyph"
+            *ngIf="c.piece as p"
+            [ngClass]="{ 'wpiece': isWhitePieceChar(p), 'bpiece': isBlackPieceChar(p) }"
+          >
+            {{ pieceGlyph(p) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="underbar">
+      <span *ngIf="error()" class="err">{{ error() }}</span>
+      <span *ngIf="!error() && info()" class="info">{{ info() }}</span>
+    </div>
+  </div>
+
+  <!-- MY CLOCK (immer unten) -->
+  <div class="clock-row">
+    <div class="clock"
+         [class.active]="g.status==='ONGOING' && g.nextToMove === (meColor()==='w' ? 'WHITE' : 'BLACK')">
+      <div class="label">
+        {{ meColor()==='w' ? (g.whiteUsername || g.whiteId || '—') : (g.blackUsername || g.blackId || '—') }}
+      </div>
+      <div class="time">
+        {{ meColor()==='w'
+            ? formatMs(nowMsFor('WHITE'))
+            : formatMs(nowMsFor('BLACK')) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Remis-Angebot Banner -->
+  <div *ngIf="g.status === 'ONGOING' && g.drawOfferBy && g.drawOfferBy !== meId"
+       class="bg-yellow-100 border border-yellow-400 p-3 rounded mb-3 flex items-center justify-between gap-3">
+    <span>Dein Gegner hat Remis angeboten.</span>
+    <span class="flex gap-2">
+      <button (click)="acceptDraw()" class="bg-green-600 text-white px-3 py-1 rounded">Annehmen</button>
+      <button (click)="declineDraw()" class="bg-red-600 text-white px-3 py-1 rounded">Ablehnen</button>
+    </span>
+  </div>
+  <div *ngIf="g.status === 'ONGOING' && g.drawOfferBy && g.drawOfferBy === meId"
+       class="bg-blue-50 border border-blue-300 p-3 rounded mb-3">
+    Du hast ein Remis angeboten. Warte auf die Antwort deines Gegners …
+  </div>
+
+  <!-- Actions -->
+  <div class="mt-3 flex gap-2" *ngIf="g.status === 'ONGOING'">
+    <button (click)="resign()" class="bg-red-500 text-white px-3 py-1 rounded">Aufgeben</button>
+    <button (click)="offerDraw()" [disabled]="g.drawOfferBy != null"
+            class="bg-indigo-600 text-white px-3 py-1 rounded">
+      Remis anbieten
+    </button>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+.board-wrap{display:inline-block;}
+.board{display:flex; flex-direction:column; border:2px solid #444; user-select:none}
+.board.flipped{transform: rotate(180deg);}
+.rank{display:flex; flex-direction:row;}
+.cell{
+  width:56px; height:56px; display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.cell.light{background:#f0d9b5;}
+.cell.dark{background:#b58863;}
+.cell.sel{outline:2px solid #1e88e5;}
+.cell.hint{box-shadow: inset 0 0 0 4px rgba(30,136,229,.35);}
+
+.glyph{
+  font-size:30px; line-height:1;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid rgba(0,0,0,.15);
+  user-select:none; pointer-events:none;
+}
+.wpiece{ background:#fff; color:#111; }
+.bpiece{ background:#222; color:#fff; border-color: rgba(255,255,255,.2); }
+
+.board.flipped .glyph{ transform: rotate(180deg); }
+
+.underbar{margin-top:6px; font-size:12px}
+.err{color:#c62828}
+.info{color:#2e7d32}
