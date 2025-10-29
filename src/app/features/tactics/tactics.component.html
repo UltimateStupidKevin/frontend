@@ -1,0 +1,42 @@
+<div class="page">
+  <div class="header">
+    <h1 class="title">Taktikaufgaben</h1>
+    <p class="sub">Max. 4 Halbzüge • Du ziehst nur <b>deine</b> Farbe • Gegnerzüge laufen automatisch</p>
+  </div>
+
+  <div *ngIf="loading" class="info">Lade Puzzle…</div>
+  <div *ngIf="error" class="error">Fehler: {{ error }}</div>
+
+  <ng-container *ngIf="!loading && !error">
+    <div class="board">
+      <div
+        *ngFor="let sq of squares(); let i = index"
+        [ngClass]="cssSquare(i, sq)"
+        (click)="onSquareClick(sq)"
+      >
+        <div class="square-content">
+          <!-- Token nur rendern, wenn wirklich eine Figur vorhanden ist -->
+          <ng-container *ngIf="board[sq] && board[sq] !== '.'">
+            <span
+              class="piece-token"
+              [class.white]="isWhitePiece(board[sq])"
+              [class.black]="!isWhitePiece(board[sq])"
+            >
+              <span class="piece">{{ glyph(board[sq]) }}</span>
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="gbtn" (click)="onHint()">Hinweis</button>
+      <button class="gbtn" (click)="onReset()">Zurücksetzen</button>
+      <button class="gbtn primary" (click)="onNext()">Neues Puzzle</button>
+
+      <span class="pill">Schritt {{ displayStep }} / {{ solution.length }}</span>
+      <span class="pill">Du spielst: {{ userColor === 'w' ? 'Weiß' : 'Schwarz' }}</span>
+      <span class="msg" *ngIf="done">Gelöst ✅</span>
+    </div>
+  </ng-container>
+</div>

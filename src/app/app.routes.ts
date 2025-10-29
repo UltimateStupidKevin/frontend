@@ -42,6 +42,13 @@ export const routes: Routes = [
       import('./features/games/game-detail.page').then((m) => m.GameDetailPage),
   },
 
+  {
+    path: 'tactics',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./features/tactics/tactics.component').then(m => m.TacticsComponent)
+  },
+
   // Default & Fallback
   { path: '', pathMatch: 'full', redirectTo: '/games/open' },
   { path: '**', redirectTo: '/games/open' },
