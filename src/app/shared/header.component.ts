@@ -14,6 +14,7 @@ import { AuthService } from '../core/auth/auth.service';
         <a routerLink="/games/open">Open Games</a>
         <a routerLink="/games/create">Create Game</a>
         <a routerLink="/tactics">Tactics</a>
+        <a routerLink="/analysis">Analysis</a>
       </nav>
 
       <div class="right" *ngIf="auth.isLoggedIn(); else authLinks">

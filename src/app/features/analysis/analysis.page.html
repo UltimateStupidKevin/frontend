@@ -1,0 +1,144 @@
+<div class="page">
+  <div class="top">
+    <h1 class="title">Analyse</h1>
+    <p class="sub">Aktuell: nur PGN einfügen → Engine berechnet Varianten.</p>
+  </div>
+
+  <div class="pgn">
+    <label class="label">PGN</label>
+    <textarea
+      class="textarea"
+      [ngModel]="pgn()"
+      (ngModelChange)="pgn.set($event ?? '')"
+      placeholder="[Event &quot;...&quot;]
+1. e4 e5 2. Nf3 Nc6 ..."
+      rows="8"
+    ></textarea>
+
+    <div class="controls">
+      <div class="ctl">
+        <label>Depth</label>
+        <input
+          type="number"
+          min="1"
+          max="30"
+          [ngModel]="depth()"
+          (ngModelChange)="depth.set(asNumber($event))"
+        />
+      </div>
+
+      <div class="ctl">
+        <label>Varianten</label>
+        <select [ngModel]="multiPv()" (ngModelChange)="multiPv.set(asNumber($event))">
+          <option [ngValue]="1">1</option>
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="3">3</option>
+          <option [ngValue]="4">4</option>
+          <option [ngValue]="5">5</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="button" (click)="onClear()" [disabled]="loading()">Leeren</button>
+        <button class="btn primary" type="button" (click)="onAnalyse()" [disabled]="loading()">Analysieren</button>
+      </div>
+    </div>
+
+    <div *ngIf="error()" class="error">{{ error() }}</div>
+    <div *ngIf="loading()" class="loading">Analyse läuft… (kann ein paar Sekunden dauern)</div>
+  </div>
+
+  <div class="layout" *ngIf="fen()">
+    <!-- Eval-Bar + Eval-Box -->
+    <div class="eval">
+      <div class="eval-stack">
+        <div class="eval-bar" aria-label="Evaluation">
+          <div class="eval-white" [style.height.%]="whiteBarPct() * 100"></div>
+        </div>
+
+        <div class="eval-box" aria-label="Evaluation value">
+          {{ evalBoxText() }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div class="board-wrap">
+      <div class="board">
+        <button
+          type="button"
+          *ngFor="let sq of squares(); let i = index"
+          class="square"
+          [class.dark]="isDark(i)"
+          [class.light]="!isDark(i)"
+          [class.selected]="isSelected(sq)"
+          [class.target]="isTarget(sq)"
+          (click)="onSquareClick(sq)"
+          [attr.aria-label]="'Square ' + sq"
+        >
+          <div class="square-content">
+            <ng-container *ngIf="board()[sq] && board()[sq] !== '.'">
+              <span
+                class="piece-token"
+                [class.white]="isWhitePiece(board()[sq])"
+                [class.black]="!isWhitePiece(board()[sq])"
+              >
+                <span class="piece">{{ glyph(board()[sq]) }}</span>
+              </span>
+            </ng-container>
+
+            <span class="target-dot" *ngIf="isTarget(sq)"></span>
+          </div>
+        </button>
+      </div>
+
+      <div class="meta">
+        <div class="board-actions">
+          <button
+            class="btn mini"
+            type="button"
+            (click)="onUndo()"
+            [disabled]="!canUndo() || loading()"
+          >
+            Zurück
+          </button>
+
+          <span class="hint" *ngIf="autoAnalysePending()">Neue Position wird gleich analysiert…</span>
+        </div>
+
+        <div class="fen">FEN: <code>{{ fen() }}</code></div>
+      </div>
+    </div>
+
+    <!-- Variants -->
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="ph-title">Varianten</div>
+        <div class="ph-sub" *ngIf="loading()">Analyse läuft…</div>
+        <div class="ph-sub" *ngIf="!loading() && result()">
+          Depth {{ topLine()?.depth ?? '—' }} • MultiPV {{ result()?.lines?.length ?? 0 }}
+        </div>
+      </div>
+
+      <div class="panel-body" *ngIf="gameOver()">
+        <div class="gameover">
+          Spiel beendet – keine weitere Analyse.
+        </div>
+      </div>
+
+      <div class="panel-body" *ngIf="!gameOver() && !result() && !loading()">
+        <div class="muted">Noch keine Analyse.</div>
+      </div>
+
+      <div class="panel-body" *ngIf="!gameOver() && result()">
+        <div class="line" *ngFor="let l of linesView()">
+          <div class="line-left">
+            <div class="badge">{{ l.eval }}</div>
+            <div class="depth">d{{ l.depth }}</div>
+          </div>
+          <div class="pv">{{ l.sanPv || l.pv.join(' ') }}</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
