@@ -1,0 +1,157 @@
+<div class="page">
+  <div class="top">
+    <div>
+      <h1 class="title">{{ title() }}</h1>
+      <p class="sub">{{ subtitle() }}</p>
+    </div>
+
+    <a class="btn link" routerLink="/master-games">← Zur Übersicht</a>
+  </div>
+
+  <div class="card" *ngIf="error()">{{ error() }}</div>
+  <div class="card" *ngIf="loading()">Lade Partie…</div>
+
+  <div class="layout" *ngIf="!loading() && game() as g">
+    <div class="board-col">
+      <div class="board-wrap">
+        <div class="board">
+          <div
+            class="square"
+            *ngFor="let sq of squares(); let i = index"
+            [class.dark]="isDark(i)"
+            [class.light]="!isDark(i)"
+          >
+            <div class="square-content">
+              <div
+                class="piece-token"
+                *ngIf="board()[sq] && board()[sq] !== '.'"
+                [class.white]="isWhitePiece(board()[sq])"
+                [class.black]="!isWhitePiece(board()[sq])"
+              >
+                <span class="piece">{{ glyph(board()[sq]) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="viewer-controls">
+          <button class="btn mini" (click)="start()" [disabled]="!canPrev()">«</button>
+          <button class="btn mini" (click)="prev()" [disabled]="!canPrev()">‹</button>
+
+          <div class="ply">
+            Ply: <b>{{ ply() }}</b> / {{ moves().length }}
+          </div>
+
+          <button class="btn mini" (click)="next()" [disabled]="!canNext()">›</button>
+          <button class="btn mini" (click)="end()" [disabled]="!canNext()">»</button>
+        </div>
+
+        <div class="viewer-actions">
+          <a class="btn link" [href]="analysisHref()" target="_blank" rel="noopener">
+            In Analyse öffnen (aktuelles FEN)
+          </a>
+        </div>
+
+        <div class="fenbox">
+          <div><b>Aktuelles FEN</b></div>
+          <code>{{ currentFen() }}</code>
+        </div>
+
+        <div class="pgnbox">
+          <div><b>PGN</b></div>
+          <textarea class="textarea" readonly [value]="g.pgn"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col">
+      <div class="panel moves-panel">
+        <div class="panel-head">
+          <div class="ph-title">Züge</div>
+          <div class="ph-sub">Klick auf einen Zug → springe zur Position</div>
+        </div>
+
+        <div class="panel-body moves-body">
+          <div class="moves-scroll">
+            <div class="moves">
+              <div class="moves-head">
+                <div>#</div>
+                <div>Weiß</div>
+                <div>Schwarz</div>
+              </div>
+
+              <div class="moves-row" *ngFor="let row of movePairs()">
+                <div class="mn mono">{{ row.moveNo }}.</div>
+
+                <button
+                  class="move"
+                  [class.current]="isCurrentMove(row.white)"
+                  (click)="row.white && jumpToPly(row.white.ply)"
+                  [disabled]="!row.white"
+                >
+                  {{ row.white?.san || '—' }}
+                </button>
+
+                <button
+                  class="move"
+                  [class.current]="isCurrentMove(row.black)"
+                  (click)="row.black && jumpToPly(row.black.ply)"
+                  [disabled]="!row.black"
+                >
+                  {{ row.black?.san || '—' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel info">
+        <div class="panel-head">
+          <div class="ph-title">Infos</div>
+          <div class="ph-sub">Aus DB + PGN-Tags</div>
+        </div>
+
+        <div class="panel-body">
+          <div class="kv">
+            <div class="k">ID</div>
+            <div class="v mono">#{{ g.id }}</div>
+
+            <div class="k">Datum</div>
+            <div class="v mono">{{ g.gameDate || '—' }}</div>
+
+            <div class="k">Weiß</div>
+            <div class="v">{{ g.white || '—' }}</div>
+
+            <div class="k">Schwarz</div>
+            <div class="v">{{ g.black || '—' }}</div>
+
+            <div class="k">Result</div>
+            <div class="v mono"><b>{{ g.result || '—' }}</b></div>
+
+            <div class="k">Event</div>
+            <div class="v">{{ g.event || '—' }}</div>
+
+            <div class="k">Site</div>
+            <div class="v">{{ g.site || '—' }}</div>
+
+            <div class="k">Start-FEN</div>
+            <div class="v mono">
+              {{ initialFen() === 'start' ? 'startpos' : initialFen() }}
+            </div>
+          </div>
+
+          <div class="tags" *ngIf="(tags() | keyvalue).length > 0">
+            <div class="tags-title">PGN Tags</div>
+            <div class="taggrid">
+              <div class="tag" *ngFor="let t of tags() | keyvalue">
+                <div class="tk">{{ t.key }}</div>
+                <div class="tv">{{ t.value }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

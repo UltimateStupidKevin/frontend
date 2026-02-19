@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Chess } from 'chess.js';
 import { EngineApiService } from '../../core/engine/engine-api.service';
 import {
@@ -27,8 +28,9 @@ type GameOverState =
   templateUrl: './analysis.page.html',
   styleUrls: ['./analysis.page.scss'],
 })
-export class AnalysisPage {
+export class AnalysisPage implements OnInit {
   private engine = inject(EngineApiService);
+  private route = inject(ActivatedRoute);
 
   // UI State
   pgn = signal('');
@@ -59,14 +61,20 @@ export class AnalysisPage {
   private analyseDebounceHandle: ReturnType<typeof setTimeout> | null = null;
   private requestSeq = 0;
 
-  // Internal chess state (source of truth for legal moves)
+  // Internal chess state
   private chess: Chess | null = null;
 
-  // helpers for board rendering (gleiches Design wie Tactics)
+  // helpers for board rendering 
   files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   ranks = [8, 7, 6, 5, 4, 3, 2, 1];
 
-  /** Hilfsfunktion für Templates (Angular Templates können globales Number(...) nicht auflösen). */
+  ngOnInit(): void {
+    const fenParam = this.route.snapshot.queryParamMap.get('fen');
+    if (fenParam && fenParam.trim()) {
+      this.setPositionFromFen(fenParam.trim());
+    }
+  }
+
   asNumber(value: unknown): number {
     const n = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(n) ? n : 0;
@@ -135,7 +143,6 @@ export class AnalysisPage {
     return `${sign}${pawns.toFixed(2)}`;
   });
 
-  /** Text für die Eval-Box (immer sichtbar und klar). */
   evalBoxText = computed(() => {
     const go = this.gameOver();
     if (go) {
@@ -151,7 +158,6 @@ export class AnalysisPage {
     return this.rawEvalText();
   });
 
-  /** 0..1 (0 = schwarz dominiert, 1 = weiß dominiert) */
   whiteBarPct = computed(() => {
     const go = this.gameOver();
     if (go?.kind === 'checkmate') {
@@ -175,7 +181,7 @@ export class AnalysisPage {
     return Math.min(1, Math.max(0, pct));
   });
 
-  // ---------- Variants ----------
+
 
   linesView = computed(() => {
     const r = this.result();
@@ -277,7 +283,6 @@ export class AnalysisPage {
     }
 
     if (this.isCheckmateChess(c)) {
-      // side to move ist matt -> Gewinner ist die andere Farbe
       const turn: 'w' | 'b' = c.turn();
       const winner: 'white' | 'black' = turn === 'w' ? 'black' : 'white';
       this.gameOver.set({ kind: 'checkmate', winner });
@@ -297,8 +302,6 @@ export class AnalysisPage {
     // Fallback
     this.gameOver.set({ kind: 'draw' });
   }
-
-  // ---------- Board clicks (ziehen) ----------
 
   onSquareClick(sq: string) {
     if (!this.chess) return;
@@ -374,22 +377,15 @@ export class AnalysisPage {
       this.clearSelection();
       return;
     }
-
-    // Undo stack (nur UI-Züge)
     this.undoStack.update((s) => [...s, beforeFen]);
 
     const newFen = this.chess.fen();
     this.fen.set(newFen);
     this.board.set(this.fenToBoard(newFen));
     this.clearSelection();
-
-    // Alte Analyse verwerfen
     this.result.set(null);
-
-    // Game state prüfen
     this.updateGameOverState();
 
-    // Auto-Analyse nur wenn NICHT game over
     if (!this.gameOver()) {
       this.scheduleAutoAnalyse();
     } else {
@@ -420,8 +416,6 @@ export class AnalysisPage {
       this.scheduleAutoAnalyse();
     }
   }
-
-  // ---------- Analyse (manuell & automatisch) ----------
 
   async onAnalyse() {
     this.error.set(null);
@@ -550,13 +544,8 @@ export class AnalysisPage {
     this.clearSelection();
 
     this.chess = new Chess(fen);
-
-    // Undo nur für UI-Züge -> leer starten
     this.undoStack.set([]);
-
     this.updateGameOverState();
-
-    // Falls nicht game over, sofort auto-analysieren (wenn du das willst)
     if (!this.gameOver()) {
       this.scheduleAutoAnalyse();
     }

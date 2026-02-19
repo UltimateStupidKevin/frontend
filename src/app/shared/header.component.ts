@@ -9,35 +9,76 @@ import { AuthService } from '../core/auth/auth.service';
   imports: [CommonModule, RouterLink],
   template: `
     <header class="wrap">
-      <nav class="left">
-        <a routerLink="/games/open" class="brand">♟ Chess</a>
-        <a routerLink="/games/open">Open Games</a>
-        <a routerLink="/games/create">Create Game</a>
-        <a routerLink="/tactics">Tactics</a>
-        <a routerLink="/analysis">Analysis</a>
-      </nav>
+      <div class="left">
+        <div class="brand">♟ Chess</div>
 
-      <div class="right" *ngIf="auth.isLoggedIn(); else authLinks">
-        <span>Hallo, <strong>{{ auth.user()?.username }}</strong>!</span>
-        <button type="button" (click)="onLogout()">Logout</button>
+        <nav class="nav" *ngIf="auth.user() as u">
+          <a routerLink="/games/open">Open Games</a>
+          <a routerLink="/games/create">Create Game</a>
+          <a routerLink="/master-games">Master Games</a>
+          <a routerLink="/tactics">Tactics</a>
+          <a routerLink="/analysis">Analysis</a>
+        </nav>
       </div>
 
-      <ng-template #authLinks>
-        <nav class="right">
+      <div class="right" *ngIf="auth.user() as u; else loggedOut">
+        <div class="hello">Hallo, {{ u.username }}!</div>
+        <button (click)="onLogout()">Logout</button>
+      </div>
+
+      <ng-template #loggedOut>
+        <nav class="nav">
           <a routerLink="/login">Login</a>
           <a routerLink="/register">Register</a>
         </nav>
       </ng-template>
     </header>
   `,
-  styles: [`
-    .wrap { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #ddd; }
-    .brand { font-weight:700; margin-right:12px; }
-    nav.left a { margin-right:10px; }
-    nav.right a { margin-left:10px; }
-    .right { display:flex; gap:12px; align-items:center; }
-    button { padding:6px 10px; }
-  `]
+  styles: [
+    `
+      .wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid #ddd;
+        gap: 12px;
+      }
+
+      .left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand {
+        font-weight: 800;
+        margin-right: 6px;
+        white-space: nowrap;
+      }
+
+      .nav a {
+        margin-right: 10px;
+        text-decoration: none;
+      }
+
+      .right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .hello {
+        opacity: 0.9;
+        font-weight: 700;
+      }
+
+      button {
+        padding: 6px 10px;
+      }
+    `,
+  ],
 })
 export class HeaderComponent {
   auth = inject(AuthService);

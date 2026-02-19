@@ -10,18 +10,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStore = inject(TokenStorageService);
   const router = inject(Router);
 
-  const isApi = typeof req.url === 'string' && req.url.startsWith(environment.apiBase);
-  let authReq: HttpRequest<any> = req;
+  const url = typeof req.url === 'string' ? req.url : '';
+  const isApi =
+    url.startsWith(environment.apiBase) ||
+    url.startsWith('/api/') ||
+    url.startsWith('api/');
 
+  let authReq: HttpRequest<any> = req;
   const token = tokenStore.getToken();
+
   if (isApi && token) {
     authReq = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
+      setHeaders: { Authorization: `Bearer ${token}` },
     });
   }
 
   return next(authReq).pipe(
-    catchError(err => {
+    catchError((err) => {
       // Wichtig:
       // - 401 (unauthenticated): zum Login
       // - 403 (forbidden): NICHT navigieren -> Seite kann sauber reagieren

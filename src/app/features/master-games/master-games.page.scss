@@ -1,0 +1,254 @@
+:host {
+  display: block;
+  color: #f2f2f2;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 14px 28px;
+}
+
+/* Header */
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+
+  .title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.2px;
+  }
+
+  .sub {
+    margin: 6px 0 0;
+    opacity: 0.85;
+  }
+}
+
+/* Card Base */
+.card {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.btn,
+a.btn,
+button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+a.btn {
+  text-decoration: none;
+}
+
+.btn:hover:not(:disabled),
+a.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn:disabled,
+a.btn:disabled,
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Primary */
+.btn.primary {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+.btn.link {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.16);
+  color: #111111;
+}
+
+.btn.link:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+.btn.mini {
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.list .pager .btn.mini {
+  min-width: 38px; 
+}
+
+/* Filters */
+.filters {
+  margin-bottom: 14px;
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 900;
+    opacity: 0.92;
+    color: #ffffff;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.92);
+    color: #111111;
+    outline: none;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .error {
+    color: #ffb3b3;
+    font-weight: 800;
+  }
+
+  .hint {
+    opacity: 0.85;
+  }
+}
+
+/* List Head */
+.list {
+  .list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 10px;
+  }
+
+  .count {
+    font-weight: 700;
+  }
+
+  .muted {
+    opacity: 0.75;
+    margin-left: 8px;
+  }
+
+  .pager {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .empty {
+    padding: 14px 6px;
+    opacity: 0.85;
+  }
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  vertical-align: top;
+  background: transparent; 
+}
+
+.table thead th {
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.25px;
+  opacity: 0.95;
+}
+
+.table tbody td {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 650;
+}
+
+.table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.actions-col {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  background: transparent !important;
+}
+
+.actions-col .btn {
+  min-width: 120px;
+}
+
+/* Misc */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+}

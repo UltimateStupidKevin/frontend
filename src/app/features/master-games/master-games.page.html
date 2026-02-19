@@ -1,0 +1,118 @@
+<div class="page">
+  <div class="top">
+    <h1 class="title">Meisterspiele</h1>
+    <p class="sub">Datenbank der Meister-Partien – filtern, öffnen, Zug für Zug anschauen.</p>
+  </div>
+
+  <div class="card filters">
+    <div class="row">
+      <div class="field">
+        <label>Spieler (weiß oder schwarz)</label>
+        <input
+          [ngModel]="player()"
+          (ngModelChange)="player.set($event)"
+          placeholder="z.B. Carlsen"
+        />
+      </div>
+
+      <div class="field">
+        <label>Event</label>
+        <input
+          [ngModel]="event()"
+          (ngModelChange)="event.set($event)"
+          placeholder="z.B. WCC"
+        />
+      </div>
+
+      <div class="field">
+        <label>Result</label>
+        <select
+          [ngModel]="result()"
+          (ngModelChange)="result.set($event)"
+        >
+          <option value="">(alle)</option>
+          <option value="1-0">1-0</option>
+          <option value="0-1">0-1</option>
+          <option value="1/2-1/2">1/2-1/2</option>
+          <option value="*">*</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Von</label>
+        <input
+          type="date"
+          [ngModel]="from()"
+          (ngModelChange)="from.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Bis</label>
+        <input
+          type="date"
+          [ngModel]="to()"
+          (ngModelChange)="to.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" (click)="reset()" [disabled]="loading()">Reset</button>
+      <button class="btn primary" (click)="search(true)" [disabled]="loading()">Suchen</button>
+    </div>
+
+    <div class="meta">
+      <div *ngIf="error()" class="error">{{ error() }}</div>
+      <div class="hint" *ngIf="loading()">Lade Meister-Partien…</div>
+    </div>
+  </div>
+
+  <div class="card list">
+    <div class="list-head">
+      <div class="count">
+        Treffer: <b>{{ total() }}</b>
+        <span class="muted">• Seite {{ page() + 1 }} / {{ pageCount() }}</span>
+      </div>
+
+      <div class="pager">
+        <button class="btn mini" (click)="prev()" [disabled]="loading() || !canPrev()">‹</button>
+        <button class="btn mini" (click)="next()" [disabled]="loading() || !canNext()">›</button>
+      </div>
+    </div>
+
+    <div *ngIf="!loading() && items().length === 0" class="empty">
+      Keine Meister-Partien gefunden. (Falls du noch keine Seed-Daten drin hast: später per Flyway INSERTs rein.)
+    </div>
+
+    <table class="table" *ngIf="items().length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Datum</th>
+          <th>Weiß</th>
+          <th>Schwarz</th>
+          <th>Result</th>
+          <th>Event</th>
+          <th>Site</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let g of items()">
+          <td class="mono">#{{ g.id }}</td>
+          <td class="mono">{{ g.gameDate || '—' }}</td>
+          <td>{{ g.white || '—' }}</td>
+          <td>{{ g.black || '—' }}</td>
+          <td class="mono"><b>{{ g.result || '—' }}</b></td>
+          <td>{{ g.event || '—' }}</td>
+          <td>{{ g.site || '—' }}</td>
+          <td class="actions-col">
+            <a class="btn mini link" [routerLink]="['/master-games', g.id]">Anschauen</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
